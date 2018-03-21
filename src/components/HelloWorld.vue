@@ -1,15 +1,20 @@
 <template>
   <div id="helloword">
-    <div>
+    <div class="wrapper">
       <div style="" id="zhuxingtu"></div>
       <div style="" id="zhuxingtu2"></div>
       <div style="clear:both"></div>
     </div>
-    <div>
+    <div  class="wrapper">
       <div style="" id="shanxingtu"></div>
+      <div style="" id="huanxingtu"></div>
+      <div style="clear:both"></div>
+    </div>
+    <div class="wrapper">
       <div id="map"></div>
       <div style="clear:both"></div>
     </div>
+    <div id="map2"></div>
     
   </div>
 </template>
@@ -18,7 +23,15 @@
   export default {
     data() {
       return {
-          
+          charts: '',
+            opinion:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎'],
+            opinionData:[
+              {value:335, name:'直接访问'},
+              {value:310, name:'邮件营销'},
+              {value:234, name:'联盟广告'},
+              {value:135, name:'视频广告'},
+              {value:1548, name:'搜索引擎'}
+            ]
       }
     }, 
     methods:{
@@ -48,7 +61,7 @@
         myChartZhu2.setOption({
           backgroundColor: '#e6e2e4',
           title: {
-            text: 'ECharts 单一表格示例'
+            text: 'ECharts 多表表格示例'
           },
           legend: {},
           tooltip: {},
@@ -101,9 +114,51 @@
           ],
         });
 
-        // 绘制地图
+        // 绘制环形图
+        var myChartHuan = this.$echarts.init(document.getElementById('huanxingtu'));
+        myChartHuan.setOption({
+           backgroundColor: '#e6e2e4',
+           tooltip: {
+            trigger: 'item',
+             formatter: '{a}<br/>{b}:{c} ({d}%)'
+           },
+           legend: {
+             orient: 'vertical',
+             x: 'left',
+             data:this.opinion
+           },
+           series: [
+             { 
+               name:'访问来源',
+               type:'pie',
+               radius:['40%','70%'],
+               avoidLabelOverlap: false,
+               label: {
+                 normal: {
+                   show: false,
+                   position: 'center',
+                 },
+                 emphasis: {
+                   show: true,
+                   textStyle: {
+                     fontSize: '30',
+                     fontWeight: 'blod'
+                   }
+                 }
+               },
+               labelLine: {
+                 normal: {
+                   show: false
+                 }
+               },
+               data:this.opinionData
+             }
+           ]
+        });
+        // 绘制地图1
         var myChartMap = this.$echarts.init(document.getElementById('map'));
         myChartMap.setOption({
+          backgroundColor: '#e6e2e4',
           title : {
             text: '订单量',
             subtext: '纯属虚构',
@@ -131,6 +186,7 @@
             ],
             color: ['#E0022B', '#E09107', '#A3E00B']
           },
+          // 工具盒，可以保存图片
           toolbox: {
             show: true,
             orient : 'vertical',
@@ -210,6 +266,72 @@
             ]
           }]
         });
+        // 绘制地图2
+        var myChartMap2 = this.$echarts.init(document.getElementById('map2'));
+        // 地图上数据
+        var myData = [
+          {name: '分店1', value: [121.15, 31.89, 90]},
+          {name: '分店2', value: [109.781327, 39.608266, 120]},
+          {name: '分店3', value: [120.38, 37.35, 142]},
+          {name: '分店4', value: [122.207216, 29.985295, 123]},
+          {name:'分店5',value:[110.245672,30.7787677,566]}
+        ]
+
+        myChartMap2.setOption({
+
+          // 新建一个地理坐标系 geo ，
+          geo: {
+            map: 'china',//地图类型为中国地图
+            itemStyle:{ // 定义样式
+              normal:{       // 普通状态下的样式
+                areaColor:'#6699CC',
+                borderColor: '#fff',
+              },
+              emphasis: {         // 高亮状态下的样式
+                areaColor: '#e9fbf1'
+              }
+            }
+
+          },
+          // hover显示目标数据
+          tooltip : {
+            trigger: 'item',
+            // tooltip的trigger的值可以有'item'、'axis'。
+            //'item':数据项图形触发，主要在散点图，饼图等无类目轴的图表中使用。
+            //'axis':坐标轴触发，主要在柱状图，折线图等会使用类目轴的图表中使用
+            textStyle:{
+              align:'left'
+            },
+          },
+          // 图表背景色
+          backgroundColor: '#404a59',  
+          // 标志颜色
+          color:'red',
+          // 新建散点图series
+          series:[{
+            name:'',//series名称
+            type:'scatter',//为散点类型
+            coordinateSystem: 'geo',// series坐标系类型
+            data:myData,
+            symbol:'pin',
+            symbolSize:[20,20]
+          }],
+
+          // 添加视觉映射组件
+          visualMap: {
+            type: 'continuous', // 连续型
+            min: 0,           // 值域最小值，必须参数
+            max: 600,     // 值域最大值，必须参数
+            calculable: true, // 是否启用值域漫游
+            inRange: {
+              color: ['red']
+               // 指定数值从低到高时的颜色变化
+            },
+            textStyle: {
+              color: '#fff' // 值域控件的文本颜色
+            }
+          }
+        })
       },
     },
     mounted(){
@@ -218,28 +340,48 @@
   }
 </script>
 <style scoped>
+  #helloworld{
+    width: 100%;
+  }
+  .wrapper{
+    width: 76.05%;
+    margin:0 auto;
+    /*background: #000;*/
+  }
   #zhuxingtu{
-    width: 600px;
+    width: 800px;
     height:400px;
     float:left;
   }
   #zhuxingtu2{
-    width: 600px;
+    width: 800px;
     height:400px;
     margin-left: 10px;
     float:left;
   }
   #shanxingtu{
-    width: 600px;
+    width: 800px;
     height:400px;
     margin-top:10px;
     float: left;
   }
-  #map{
-    width: 600px;
+  #huanxingtu{
+    width: 800px;
     height:400px;
     margin-top:10px;
+    float: left;
     margin-left: 10px;
+  }
+  #map{
+    width: 800px;
+    height:400px;
+    margin-top:10px;
+    float: left;
+  }
+  #map2{
+    width: 100%;
+    height:800px;
+    margin-top:10px;
     float: left;
   }
 </style>
